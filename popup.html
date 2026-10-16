@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStream Pro</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app-container">
+
+  <!-- ── Header ──────────────────────────────────────── -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo-box">
+        <img src="icons/icon32.png" alt="OmniStream Pro" class="logo-img">
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">
+          OmniStream Pro
+          <span class="badge-version">v1.0</span>
+        </div>
+        <div class="domain-tag" id="currentDomain">Detecting active tab…</div>
+      </div>
+    </div>
+    <div class="bridge-indicator" id="bridgeStatus" title="OmniStream Pro Desktop Bridge Status">
+      <span class="dot"></span>
+      <span class="text">Bridge</span>
+    </div>
+  </header>
+
+  <!-- ── God Mode Card ───────────────────────────────── -->
+  <div class="god-mode-card">
+    <div class="god-mode-header">
+      <div class="god-title">
+        <svg class="svg-icon icon-glow" viewBox="0 0 24 24" width="13" height="13" fill="none"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>GOD MODE SNIFFER</span>
+      </div>
+      <span class="anti-f12-badge" title="DevTools and F12 blocks are actively neutralized on the page">
+        <svg class="svg-icon" viewBox="0 0 24 24" width="10" height="10" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        F12 Unblocked
+      </span>
+    </div>
+    <p class="god-desc">Deep DOM scan &amp; media-player stimulation to surface hidden streams.</p>
+    <button id="godModeBtn" class="btn-god-mode">
+      <svg class="svg-icon" viewBox="0 0 24 24" width="13" height="13" fill="none"
+           stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      <span id="godBtnText">ACTIVATE GOD MODE SCAN</span>
+    </button>
+  </div>
+
+  <!-- ── Navigation Tabs ─────────────────────────────── -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" data-tab="tab-detected">
+      <svg class="svg-icon" viewBox="0 0 24 24" width="12" height="12" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="23 7 16 12 23 17 23 7"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+      <span>Streams</span>
+      <span class="counter" id="detectedCount">0</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-queue">
+      <svg class="svg-icon" viewBox="0 0 24 24" width="12" height="12" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"/>
+        <line x1="8" y1="12" x2="21" y2="12"/>
+        <line x1="8" y1="18" x2="21" y2="18"/>
+        <line x1="3" y1="6" x2="3.01" y2="6"/>
+        <line x1="3" y1="12" x2="3.01" y2="12"/>
+        <line x1="3" y1="18" x2="3.01" y2="18"/>
+      </svg>
+      <span>Queue</span>
+      <span class="counter" id="queueCount">0</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-bridge">
+      <svg class="svg-icon" viewBox="0 0 24 24" width="12" height="12" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+      <span>Bridge</span>
+    </button>
+  </nav>
+
+  <!-- ── Content Body ────────────────────────────────── -->
+  <main class="content-body">
+
+    <!-- TAB 1 — Detected Streams -->
+    <section id="tab-detected" class="tab-pane active">
+      <div class="pane-header">
+        <span class="pane-title">Detected Video Streams</span>
+        <button id="clearDetectedBtn" class="btn-link" title="Clear all detected streams">
+          <svg class="svg-inline" viewBox="0 0 24 24" width="11" height="11" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+      <div id="detectedList" class="cards-list">
+        <div class="empty-state">
+          <div class="empty-graphic">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#2a3a55"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="3"/>
+              <line x1="7" y1="2" x2="7" y2="22"/>
+              <line x1="17" y1="2" x2="17" y2="22"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <line x1="2" y1="7" x2="7" y2="7"/>
+              <line x1="2" y1="17" x2="7" y2="17"/>
+              <line x1="17" y1="17" x2="22" y2="17"/>
+              <line x1="17" y1="7" x2="22" y2="7"/>
+            </svg>
+          </div>
+          <div class="empty-title">No video streams detected yet</div>
+          <div class="empty-hint">Play a video on the page, or click <strong>ACTIVATE GOD MODE SCAN</strong> above.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2 — Download Queue -->
+    <section id="tab-queue" class="tab-pane">
+      <div class="pane-header">
+        <span class="pane-title">Download Queue</span>
+        <div class="pane-actions">
+          <button id="sendAllToDesktopBtn" class="btn-small btn-indigo" title="Send all queued streams to OmniStream Pro">
+            <svg class="svg-inline" viewBox="0 0 24 24" width="10" height="10" fill="none"
+                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            Send All
+          </button>
+          <button id="clearQueueBtn" class="btn-link" title="Clear queue">
+            <svg class="svg-inline" viewBox="0 0 24 24" width="11" height="11" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Clear
+          </button>
+        </div>
+      </div>
+      <div id="queueList" class="cards-list">
+        <div class="empty-state">
+          <div class="empty-graphic">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#2a3a55"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </div>
+          <div class="empty-title">Download queue is empty</div>
+          <div class="empty-hint">Click <strong>+ Queue</strong> on any detected stream to add it here.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3 — Desktop Bridge & Info -->
+    <section id="tab-bridge" class="tab-pane">
+
+      <div class="bridge-card">
+        <div class="card-headline">
+          <svg class="svg-inline icon-indigo" viewBox="0 0 24 24" width="13" height="13" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Desktop Application Bridge
+        </div>
+        <p class="bridge-desc">
+          When <strong>OmniStream Pro</strong> is running, one click sends any stream directly to the desktop app for full multi-audio HLS/DASH processing and MKV output.
+        </p>
+        <div class="status-box">
+          <div class="status-row">
+            <span>Status</span>
+            <strong id="bridgeTextStatus" class="status-offline">Disconnected</strong>
+          </div>
+          <div class="status-row">
+            <span>Bridge endpoint</span>
+            <code>127.0.0.1:28795</code>
+          </div>
+        </div>
+        <button id="recheckBridgeBtn" class="btn-secondary w-100">
+          <svg class="svg-inline" viewBox="0 0 24 24" width="11" height="11" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Check Connection
+        </button>
+      </div>
+
+      <div class="settings-card">
+        <div class="card-headline">
+          <svg class="svg-inline icon-green" viewBox="0 0 24 24" width="13" height="13" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Active Detection Features
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-name">Anti-DevTools &amp; F12 Unlocker</div>
+            <div class="setting-sub">Neutralizes F12, DevTools, and right-click blockers on any page</div>
+          </div>
+          <span class="toggle-pill active">ON</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-name">Network Request Sniffer</div>
+            <div class="setting-sub">Intercepts HLS, DASH, MP4, WebM and TS streams automatically</div>
+          </div>
+          <span class="toggle-pill active">ON</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-name">cURL Command Generator</div>
+            <div class="setting-sub">Captures all original request headers for exact replay</div>
+          </div>
+          <span class="toggle-pill active">ON</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-name">Multi-Audio Track Capture</div>
+            <div class="setting-sub">Preserves all language audio tracks in HLS master playlists</div>
+          </div>
+          <span class="toggle-pill active">ON</span>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>OmniStream Pro v1.0</span>
+    <span class="sep">•</span>
+    <a href="#" id="openDesktopHelp">Documentation</a>
+  </footer>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
